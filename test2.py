@@ -39,7 +39,7 @@ parser.add_argument('--dataset',default='test',type=str)
 parser.add_argument('--nevents',default=-1,type=int)
 #
 parser.add_argument('--train',action='store_true')
-parser.add_argument('--config')#,default='models/rob.json',type=str)
+parser.add_argument('--config',default='models/rob.json',type=str)
 parser.add_argument('--nthreads', default=8, type=int)
 parser.add_argument('--no_early_stop', action='store_true')
 parser.add_argument('--xml', action='store_true')
@@ -53,7 +53,7 @@ print "Command line args:",vars(args)
 print "### Define parameters ..."
 
 input_files = {
-   'test':['/afs/cern.ch/user/b/bainbrid/work/public/7-slc7/CMSSW_10_2_15/src/2-ntuples-from-crab/output.prescale1p0.numEvent1000.root']#output.CURRENT.root
+   'test':['/afs/cern.ch/user/b/bainbrid/work/public/7-slc7/CMSSW_10_2_15/src/2-ntuples-from-crab/output.LATEST.root']#output.CURRENT.root
 }
 
 cmssw_base='/afs/cern.ch/user/b/bainbrid/work/public/7-slc7/CMSSW_10_2_15'
