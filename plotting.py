@@ -56,7 +56,8 @@ def backward(data) :
 ################################################################################
 # method to add ROC curve to plot 
 def plot( plt, df, string, selection, draw_roc, draw_eff, 
-          label, color, markersize, linestyle, linewidth=1.0, discriminator=None, mask=None, 
+          label, color, 
+          markerstyle, markersize, linestyle, linewidth=1.0, discriminator=None, mask=None, 
           df_xaxis=None ) :
    
    if draw_roc is True and discriminator is None : 
@@ -75,16 +76,27 @@ def plot( plt, df, string, selection, draw_roc, draw_eff,
    if draw_roc :
       roc = roc_curve(df.is_e[selection&mask], discriminator[selection&mask])
       auc = roc_auc_score(df.is_e[selection&mask], discriminator[selection&mask])
-      plt.plot(roc[0]*mistag, roc[1]*eff, 
+      plt.plot(roc[0]*mistag,
+               roc[1]*eff,
                linestyle=linestyle,
                linewidth=linewidth,
+               color=color)#+', AUC: %.3f'%auc)
+      plt.plot([mistag], [eff], 
+               marker=markerstyle, 
+               markersize=markersize,
+               linestyle=linestyle,
                color=color,
-               label=label+', AUC: %.3f'%auc)
-      plt.plot([mistag], [eff], marker='o', color=color, markersize=markersize)
-      return eff,mistag,roc
-   elif draw_eff :
-      plt.plot([mistag], [eff], marker='o', color=color, markersize=markersize, 
                label=label)
+   elif draw_eff :
+      plt.plot([mistag], [eff], 
+               marker=markerstyle, 
+               markersize=markersize, 
+               linestyle='',
+               color=color, 
+               label=label)
+   if draw_roc :
+      return eff,mistag,roc
+   if draw_eff :
       return eff,mistag,None
 
 ################################################################################
@@ -99,30 +111,36 @@ def plotting(plots,dataset,args,df_lowpt,df_egamma,df_orig) :
 
    plots_list = [
       {"method":AxE_retraining,"args":(plt,df_lowpt,df_egamma),"suffix":"AxE_retraining",},
-      {"method":effs_wrt_gsf_tracks,"args":(plt,df_lowpt,df_egamma),"suffix":"effs_wrt_gsf_tracks",},
       ]
    
    for plot in plots_list :
 
-      plt.figure(figsize=[8, 12])
+      plt.figure()
       ax = plt.subplot(111)
       box = ax.get_position()
       ax.set_position([box.x0, box.y0, box.width, box.height*0.666])
-      plt.title('%s training' % args.what.replace("_"," "))
+      #plt.title('%s training' % args.what.replace("_"," "))
       plt.plot(np.arange(0.,1.,0.01),np.arange(0.,1.,0.01),'k--')
+
+      ax.tick_params(axis='x', pad=10.)
+      #ax.text(0, 1, r'\bf{CMS}\ \it{Simulation}\ \it{Preliminary}', 
+      ax.text(0, 1, '\\textbf{CMS} \\textit{Simulation} \\textit{Preliminary}', 
+              ha='left', va='bottom', transform=ax.transAxes)
+      ax.text(1, 1, r'13 TeV', 
+              ha='right', va='bottom', transform=ax.transAxes)
 
       plot["method"](*plot["args"]) # Execute method
  
       # Adapt legend
       def update_prop(handle, orig):
          handle.update_from(orig)
-         handle.set_marker("o")
+         #handle.set_marker("o")
       plt.legend(handler_map={plt.Line2D:HandlerLine2D(update_func=update_prop)})
 
-      plt.xlabel('Mistag Rate')
-      plt.ylabel('Efficiency')
-      plt.legend(loc='lower left', bbox_to_anchor=(0., 1.1)) #plt.legend(loc='best')
-      plt.xlim(0., 1)
+      plt.xlabel('Mistag rate')
+      plt.ylabel(r'Acceptance $\times$ efficiency')
+      #plt.legend(loc='lower left', bbox_to_anchor=(0., 1.1)) #plt.legend(loc='best')
+      #plt.xlim(0., 1)
       
       tupl = (plots, dataset, args.jobtag, args.what, plot["suffix"])
       #try : plt.savefig('%s/%s_%s_%s_BDT_%s.png' % (tupl))

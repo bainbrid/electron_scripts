@@ -10,10 +10,14 @@ import rootpy
 
 import matplotlib
 matplotlib.use('Agg')
-from matplotlib import rc
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-rc('text', usetex=True)
 import matplotlib.pyplot as plt
+plt.style.use("cms")
+
+from matplotlib import rc
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+rc('text', usetex=True)
+#rc('text.latex', preamble='\usepackage{sfmath}')
+
 from matplotlib.legend_handler import HandlerLine2D
 from matplotlib.font_manager import FontProperties
 
